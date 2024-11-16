@@ -1,5 +1,6 @@
 package com.example.myfamilyapp
 
+import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.fragment.app.Fragment
@@ -8,12 +9,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.concurrent.CompletableFuture
 
 class HomeFragment : Fragment() {
 
+    lateinit var mContext: Context
+    private val listContacts: ArrayList<ContactModel> = ArrayList()
+    lateinit var inviteAdapter: InviteAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
     }
 
     override fun onCreateView(
@@ -78,8 +92,15 @@ class HomeFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
+        inviteAdapter = InviteAdapter(listContacts)
 
-        val inviteAdapter = InviteAdapter(fetchContacts())
+        // initializes a live observer on the DB, which notifies the inviteAdapter on any changes in the DB
+        fetchDatabaseContacts()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            // fetches data from phone's repository and inserts it into the DB
+            insertDatabaseContacts(fetchContacts())
+        }
 
         val recyclerInvite = requireView().findViewById<RecyclerView>(R.id.recycler_invite)
         recyclerInvite.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -88,7 +109,7 @@ class HomeFragment : Fragment() {
 
     private fun fetchContacts(): ArrayList<ContactModel> {
 
-        val cr = requireActivity().contentResolver
+        val cr = mContext.contentResolver
         val cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,
             null, null, null, null)
 
@@ -132,6 +153,26 @@ class HomeFragment : Fragment() {
 
         }
         return listContacts
+    }
+
+    private fun fetchDatabaseContacts() {
+        val database = MyFamilyDatabase.getDatabase(mContext)
+        val contactDao = database.contactDao()
+
+        contactDao.getAllContacts().observe(viewLifecycleOwner) {
+            listContacts.clear()
+            listContacts.addAll(it)
+            inviteAdapter.notifyDataSetChanged()
+        }
+
+    }
+
+    private fun insertDatabaseContacts(listContacts: ArrayList<ContactModel>) {
+        val database = MyFamilyDatabase.getDatabase(mContext)
+
+        CompletableFuture.runAsync {
+            database.contactDao().insertAll(listContacts)
+        }
     }
 
     companion object {
