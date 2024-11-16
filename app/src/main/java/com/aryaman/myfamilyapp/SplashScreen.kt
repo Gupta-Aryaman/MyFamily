@@ -1,4 +1,4 @@
-package com.example.myfamilyapp
+package com.aryaman.myfamilyapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

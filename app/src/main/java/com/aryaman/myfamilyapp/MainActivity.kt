@@ -1,4 +1,4 @@
-package com.example.myfamilyapp
+package com.aryaman.myfamilyapp
 
 import android.os.Bundle
 import android.widget.Toast
@@ -8,6 +8,9 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.Manifest
 import androidx.core.app.ActivityCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,6 +51,29 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             true
+        }
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val name = currentUser?.displayName.toString()
+        val mail = currentUser?.email.toString()
+        val phoneNumber = currentUser?.phoneNumber.toString()
+        val imageUrl = currentUser?.photoUrl.toString()
+
+
+        val db = Firebase.firestore
+
+        val user = hashMapOf(
+            "name" to name,
+            "mail" to mail,
+            "phoneNumber" to phoneNumber,
+            "imageUrl" to imageUrl
+        )
+
+
+        db.collection("users").document(mail).set(user).addOnSuccessListener {
+
+        }.addOnFailureListener {
+
         }
     }
 

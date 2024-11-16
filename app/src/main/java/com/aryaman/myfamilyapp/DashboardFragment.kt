@@ -1,4 +1,4 @@
-package com.example.myfamilyapp
+package com.aryaman.myfamilyapp
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

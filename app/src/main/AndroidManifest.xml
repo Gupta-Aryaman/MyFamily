@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
     <application
-        android:name=".MyFamilyApplication"
+        android:name="com.aryaman.myfamilyapp.MyFamilyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
@@ -26,7 +26,7 @@
 
         <activity
             android:theme="@style/SplashTheme"
-            android:name=".SplashScreen"
+            android:name="com.aryaman.myfamilyapp.SplashScreen"
             android:exported="true">
 
             <intent-filter>
@@ -37,13 +37,13 @@
         </activity>
 
         <activity
-            android:name=".LoginActivity"
+            android:name="com.aryaman.myfamilyapp.LoginActivity"
             android:exported="true">
 
         </activity>
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.aryaman.myfamilyapp.MainActivity"
             android:exported="true">
 
         </activity>
