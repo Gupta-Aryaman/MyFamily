@@ -12,4 +12,6 @@
     <string name="my_family">My Family</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="default_web_client_id_auth">50649474448-lrg1u7n1dcn2tb9k4sn17djutc2hkn26.apps.googleusercontent.com</string>
 </resources>
