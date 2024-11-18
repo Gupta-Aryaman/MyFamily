@@ -3,6 +3,7 @@ package com.aryaman.myfamilyapp
 import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,8 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,6 +24,7 @@ class HomeFragment : Fragment() {
     lateinit var mContext: Context
     private val listContacts: ArrayList<ContactModel> = ArrayList()
     lateinit var inviteAdapter: InviteAdapter
+    val db = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +46,27 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val listMembers = listOf<MemberModel>(
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        // Ensure the user is logged in
+        if (currentUser == null) {
+            Log.e("MapsFragment", "User is not logged in.")
+            return
+        }
+
+        val loggedInEmail = currentUser.email
+        if (loggedInEmail.isNullOrEmpty()) {
+            Log.e("MapsFragment", "Logged-in user email is null or empty.")
+            return
+        }
+
+        var listMembers = listOf<MemberModel>(
+            MemberModel(
+                "aryaman28112002@gmail.com",
+                "United States",
+                "90%",
+                "220"
+            ),
             MemberModel(
                 "Lokesh",
                 "9th buildind, 2nd floor, maldiv road, manali 9th buildind, 2nd floor",
@@ -67,25 +91,9 @@ class HomeFragment : Fragment() {
                 "60%",
                 "190"
             ),
-            MemberModel(
-                "Ramesh",
-                "12th buildind, 5th floor, maldiv road, manali 12th buildind, 5th floor",
-                "60%",
-                "190"
-            ),
-            MemberModel(
-                "Ramesh",
-                "12th buildind, 5th floor, maldiv road, manali 12th buildind, 5th floor",
-                "60%",
-                "190"
-            ),
-            MemberModel(
-                "Ramesh",
-                "12th buildind, 5th floor, maldiv road, manali 12th buildind, 5th floor",
-                "60%",
-                "190"
-            ),
         )
+
+
 
         val adapter = MemberAdapter(listMembers)
 
@@ -112,6 +120,7 @@ class HomeFragment : Fragment() {
         threeDots.setOnClickListener {
             SharedPref.putBoolean(PrefConstants.IS_USER_LOGGED_IN, false)
             FirebaseAuth.getInstance().signOut()
+            Log.d("logout69", "Logged out " + PrefConstants.IS_USER_LOGGED_IN)
         }
     }
 
